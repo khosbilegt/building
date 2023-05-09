@@ -82,6 +82,34 @@ function drawFirstFloor(baseX, baseY, baseZ) {
     drawStore(baseX + 6.5, baseY, baseZ - 20);
     drawWetKitchen(baseX + 5, baseY, baseZ - 20);
     drawBedroom(baseX - 4, baseY, baseZ - 13);
+
+    for(var i = 0; i < 40; i++) {
+        drawFence(i * 0.6 - 4, 0, 1, true)
+    }
+    for(var i = 0; i < 40; i++) {
+        drawFence(i * 0.6 - 4, 0, -24, true)
+    }
+    for(var i = 0; i < 42; i++) {
+        drawFence(-4.4, 0, i * 0.6 - 23.8, false)
+    }
+    for(var i = 0; i < 21; i++) {
+        drawFence(19.8, 0, i * 0.6 - 23.8, false)
+    }
+    for(var i = 0; i < 15; i++) {
+        drawFence(19.8, 0, i * 0.6 - 7.6, false)
+    }
+    drawGrass(14.3, -2.2, -12.5);
+}
+
+function drawGrass(baseX, baseY, baseZ) {
+    var grassTexture = new THREE.TextureLoader().load('grass.jpg');
+    var grassMaterial = new THREE.MeshLambertMaterial({ map: grassTexture });
+    var grassGeometry = new THREE.BoxGeometry(11, 0.1, 25.5);
+    var grass = new THREE.Mesh(grassGeometry, grassMaterial);
+    grass.translateX(baseX);
+    grass.translateY(baseY);
+    grass.translateZ(baseZ);
+    scene.add(grass);
 }
 
 function drawSecondFloor(baseX, baseY, baseZ) {
@@ -99,30 +127,85 @@ function drawRoof(baseX, baseY, baseZ) {
     drawWestRoof(baseX, baseY, baseZ);
     drawEastRoof(baseX + 5, baseY, baseZ);
 }
+function drawFence(baseX, baseY, baseZ, isNorth) {
+    const pyramidGeometry = new THREE.BufferGeometry();
+    var vertices = [];
+    if(isNorth) {
+        vertices = new Float32Array([
+            // base
+            -0.25, 0, -0.05,
+            0.25, 0, -0.05,
+            0.25, 0, 0.05,
+            -0.25, 0, 0.05,
+            // top
+            0, 0.5, 0
+        ]);
+    } else {
+        vertices = new Float32Array([
+            // base
+            -0.05, 0, -0.25,
+            0.05, 0, -0.25,
+            0.05, 0, 0.25,
+            -0.05, 0, 0.25,
+            // top
+            0, 0.5, 0
+        ]);
+    }
+    const pyramidIndices = new Uint16Array([
+    // base
+    0, 1, 2,
+    0, 2, 3,
+    // sides
+    0, 4, 1,
+    1, 4, 2,
+    2, 4, 3,
+    3, 4, 0
+    ]);
+    const pyramidMaterial = new THREE.MeshBasicMaterial({ color: 0x999D71 });
+    pyramidGeometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+    pyramidGeometry.setIndex(new THREE.BufferAttribute(pyramidIndices, 1));
+    const pyramid = new THREE.Mesh(pyramidGeometry, pyramidMaterial);
+    pyramid.translateX(baseX);
+    pyramid.translateY(baseY);
+    pyramid.translateZ(baseZ);
+    scene.add(pyramid);
+
+    if(isNorth) {
+        var postGeometry = new THREE.BoxGeometry(0.5, 2, 0.1);
+    } else {
+        var postGeometry = new THREE.BoxGeometry(0.1, 2, 0.5);
+    }
+    var post = new THREE.Mesh(postGeometry, wood_material);
+    post.translateX(baseX);
+    post.translateY(baseY - 1);
+    post.translateZ(baseZ);
+    scene.add(post);
+}
+  
 function drawGarage(baseX, baseY, baseZ) {
     var material = new THREE.MeshLambertMaterial({ color: 0x9B9B9B });
-    var topGeometry = new THREE.BoxGeometry(0.5, 1, 4.5);
+    var topGeometry = new THREE.BoxGeometry(0.5, 1, 4.2);
     var bottom = new THREE.Mesh(topGeometry, material);
     bottom.translateX(baseX);
-    bottom.translateY(baseY - 3);
+    bottom.translateY(baseY - 2.5);
     bottom.translateZ(baseZ);
 
-    var pillarGeometry = new THREE.BoxGeometry(0.5, 5.1, 0.5);
+    var pillarGeometry = new THREE.BoxGeometry(0.5, 4.1, 0.5);
     var pillar1 = new THREE.Mesh(pillarGeometry, material);
     var pillar2 = new THREE.Mesh(pillarGeometry, material);
     var pillar3 = new THREE.Mesh(pillarGeometry, material);
     var pillar4 = new THREE.Mesh(pillarGeometry, material);
     pillar1.translateX(baseX);
-    pillar1.translateY(baseY - 0.5);
+    pillar1.translateY(baseY);
     pillar1.translateZ(baseZ + 2);
     pillar2.translateX(baseX);
-    pillar2.translateY(baseY - 0.5);
+    pillar2.translateY(baseY);
     pillar2.translateZ(baseZ);
     pillar3.translateX(baseX);
-    pillar3.translateY(baseY - 0.5);
+    pillar3.translateY(baseY);
     pillar3.translateZ(baseZ - 2);
     pillar4.translateX(baseX - 6);
-    pillar4.translateY(baseY - 0.5);
+    pillar4.translateY(baseY);
     pillar4.translateZ(baseZ + 3.5);
 
     var roofMaterial = new THREE.MeshLambertMaterial({ color: 0x00000 });
@@ -139,7 +222,7 @@ function drawGarage(baseX, baseY, baseZ) {
     scene.add(pillar4);
     scene.add(roof);
 
-    const car = makeCar(baseX - 3.5, baseY - 2.5, baseZ, 0x003d80);
+    const car = makeCar(baseX - 3.5, baseY - 1.5, baseZ, 0x003d80);
     scene.add(car);
 }
 function drawLivingRoom(baseX, baseY, baseZ) { 
